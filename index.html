@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17212b">
+<meta name="description" content="Checklist Inspeksi Area dan Keselamatan Kerja Tambang">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Checklist K3 Tambang</title>
+<style>
+:root{--navy:#17212b;--navy2:#263847;--yellow:#f5b400;--green:#198754;--red:#dc3545;--gray:#eef1f4;--border:#cfd6dd}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,sans-serif;background:#e9edf1;color:#20262d;font-size:15px;padding-bottom:76px}
+.header{background:linear-gradient(135deg,#111a22,#263847);color:#fff;padding:18px 14px;border-bottom:5px solid var(--yellow);position:sticky;top:0;z-index:10}.header-inner{max-width:1400px;margin:auto}.header-title{display:flex;align-items:center;gap:12px}.header-icon{width:45px;height:45px;background:var(--yellow);color:#111;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:bold}.header h1{margin:0;font-size:19px}.header p{margin:4px 0 0;color:#dbe4eb;font-size:11px}
+.container{max-width:1400px;margin:14px auto;padding:0 9px}.card{background:#fff;border-radius:12px;box-shadow:0 3px 12px #00000014;margin-bottom:14px;overflow:hidden}.card-title{background:var(--navy2);color:#fff;padding:12px 14px;font-weight:bold;border-left:5px solid var(--yellow)}
+.form-grid{padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.form-group label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px;color:#38434e}
+input[type=text],input[type=datetime-local],select{width:100%;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;background:#fff;outline:none}
+.table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;min-width:880px}thead th{background:#263847;color:#fff;padding:10px;font-size:12px;text-align:center;border:1px solid #526373}tbody td{border:1px solid #d4dbe1;padding:9px;vertical-align:middle}.category-row td{background:#e8edf2;font-weight:bold;padding:10px;border-top:3px solid var(--yellow)}.category-code{background:var(--yellow);color:#111;padding:4px 7px;border-radius:5px;margin-right:6px;font-size:11px}.no{text-align:center;font-weight:bold;width:50px}.status-cell{width:285px;text-align:center}.status-group{display:flex;justify-content:center;gap:5px}.status-btn{border:2px solid #cbd2d8;background:#fff;color:#555;border-radius:8px;padding:9px 8px;min-width:78px;min-height:42px;font-size:12px;font-weight:bold;cursor:pointer}.status-btn.ok.active{background:var(--green);border-color:var(--green);color:#fff}.status-btn.notok.active{background:var(--red);border-color:var(--red);color:#fff}.status-btn.na.active{background:#6c757d;border-color:#6c757d;color:#fff}.item-row.not-ok-row{background:#ffe4e7}.item-row.not-ok-row .item-text{font-weight:bold;color:#9f1d2b}.notes{width:100%;border:1px solid var(--border);border-radius:7px;padding:10px;font-size:14px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px}.summary-box{border-radius:9px;padding:11px;text-align:center;background:#f4f6f8;border:1px solid #dbe0e5}.summary-label{font-size:10px;color:#66717c;font-weight:bold}.summary-number{font-size:25px;font-weight:bold;margin-top:3px}.total-number{color:#263847}.ok-number{color:var(--green)}.notok-number{color:var(--red)}.progress-container{padding:0 12px 13px}.progress-info{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px;font-weight:bold}.progress-bar{height:10px;background:#e0e5e9;border-radius:20px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#198754,#f5b400);transition:.25s}
+.action-bar{display:flex;gap:8px;padding:12px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:12px 16px;min-height:44px;font-weight:bold;cursor:pointer}.btn-print{background:#17212b;color:#fff}.btn-reset{background:#dc3545;color:#fff}.btn-save{background:#198754;color:#fff}.btn-top{background:var(--yellow);color:#111}.footer{text-align:center;padding:15px;font-size:11px;color:#68737d}
+.install-banner{display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:30;background:#17212b;color:#fff;border-radius:12px;padding:12px;box-shadow:0 5px 25px #0005}.install-banner button{float:right;background:var(--yellow);border:0;border-radius:7px;padding:9px 12px;font-weight:bold}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#17212b;color:#fff;display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:20}.bottom-nav button{background:none;border:0;color:#fff;font-size:11px;font-weight:bold;padding:5px}.bottom-nav span{display:block;font-size:18px;margin-bottom:2px}
+@media(max-width:900px){.form-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.form-grid{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,1fr)}.action-bar{flex-direction:column}.action-bar .btn{width:100%}.header h1{font-size:16px}}
+@media print{body{background:#fff;padding:0;font-size:10px}.header{position:static;background:#fff!important;color:#000!important;border-bottom:2px solid #000}.header p{color:#333}.card{box-shadow:none;border:1px solid #aaa;border-radius:0}.card-title{background:#ddd!important;color:#000!important}.form-grid{grid-template-columns:repeat(4,1fr);padding:6px}table{min-width:0}thead th{background:#ddd!important;color:#000!important}.status-btn{display:none}.status-btn.active{display:inline-block!important;background:#fff!important;color:#000!important;border:1px solid #000}.not-ok-row{background:#ffecec!important}.summary{grid-template-columns:repeat(4,1fr)}.no-print,.bottom-nav,.install-banner{display:none!important}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="header-inner">
+<div class="header-title"><div class="header-icon">K3</div><div><h1>CHECKLIST INSPEKSI K3 TAMBANG</h1><p>Versi PWA — dapat digunakan dari HP, tablet, maupun laptop</p></div></div>
+</div>
+</header>
+
+<main class="container">
+<section class="card">
+<div class="card-title">📋 INFORMASI INSPEKSI</div>
+<div class="form-grid">
+<div class="form-group"><label>Nama Pemeriksa / Inspektur *</label><input id="inspector" type="text" placeholder="Nama pemeriksa"></div>
+<div class="form-group"><label>Crew / Shift *</label><select id="crew"><option value="">-- Pilih --</option><option>Crew A</option><option>Crew B</option><option>Crew C</option><option>Shift Day</option><option>Shift Night</option></select></div>
+<div class="form-group"><label>Area Kerja / Zona *</label><select id="area"><option value="">-- Pilih --</option><option>Processing Plant</option><option>Workshop / Bengkel</option><option>Pit Area</option><option>Crusher</option><option>Ore Stockpile</option><option>Warehouse</option></select></div>
+<div class="form-group"><label>Tanggal & Waktu *</label><input id="inspectionDate" type="datetime-local"></div>
+</div>
+</section>
+
+<section class="card">
+<div class="card-title">🛡️ CHECKLIST INSPEKSI</div>
+<div class="table-wrapper">
+<table id="inspectionTable">
+<thead><tr><th>No.</th><th>Kategori & Item Inspeksi</th><th>Status Kondisi</th><th>Catatan / Tindakan Perbaikan</th></tr></thead>
+<tbody>
+<tr class="category-row"><td colspan="4"><span class="category-code">A</span>HOUSEKEEPING & AKSES KERJA</td></tr>
+<tr class="item-row" data-id="1"><td class="no">1</td><td class="item-text">Kebersihan area kerja terjaga dan bebas dari sampah/material berserakan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(1,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(1,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(1,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="1" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="2"><td class="no">2</td><td class="item-text">Penerangan area kerja memadai dan berfungsi dengan baik</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(2,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(2,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(2,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="2" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="3"><td class="no">3</td><td class="item-text">Tidak terdapat potensi tersandung, terpeleset atau jatuh</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(3,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(3,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(3,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="3" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="4"><td class="no">4</td><td class="item-text">Jalur evakuasi dan akses kerja bebas dari hambatan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(4,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(4,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(4,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="4" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="category-row"><td colspan="4"><span class="category-code">B</span>APD & ALAT KESELAMATAN</td></tr>
+<tr class="item-row" data-id="5"><td class="no">5</td><td class="item-text">APAR tersedia, mudah diakses dan dalam kondisi layak digunakan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(5,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(5,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(5,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="5" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="6"><td class="no">6</td><td class="item-text">Eye Wash / Emergency Shower tersedia dan dapat digunakan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(6,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(6,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(6,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="6" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="7"><td class="no">7</td><td class="item-text">Penggunaan APD khusus area sesuai dengan risiko pekerjaan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(7,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(7,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(7,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="7" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="category-row"><td colspan="4"><span class="category-code">C</span>PERALATAN & INSTALASI LISTRIK</td></tr>
+<tr class="item-row" data-id="8"><td class="no">8</td><td class="item-text">Pengaman mesin / guarding terpasang dengan baik</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(8,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(8,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(8,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="8" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="9"><td class="no">9</td><td class="item-text">Kabel, stop kontak dan panel listrik dalam kondisi layak dan aman</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(9,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(9,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(9,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="9" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="10"><td class="no">10</td><td class="item-text">Emergency Stop / tombol darurat berfungsi dengan baik</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(10,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(10,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(10,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="10" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="category-row"><td colspan="4"><span class="category-code">D</span>BAHAYA SPESIFIK AREA</td></tr>
+<tr class="item-row" data-id="11"><td class="no">11</td><td class="item-text">Pengendalian debu dan kebisingan tersedia dan efektif</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(11,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(11,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(11,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="11" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="12"><td class="no">12</td><td class="item-text">B3 tertata dengan benar dan spill kit tersedia</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(12,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(12,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(12,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="12" placeholder="Catatan / tindakan..."></td></tr>
+<tr class="item-row" data-id="13"><td class="no">13</td><td class="item-text">Ventilasi memadai dan pengendalian risiko ruang terbatas diterapkan</td><td class="status-cell"><div class="status-group"><button class="status-btn ok" onclick="setStatus(13,'OK',this)">✓ OK</button><button class="status-btn notok" onclick="setStatus(13,'NOT OK',this)">✕ NOT OK</button><button class="status-btn na" onclick="setStatus(13,'N/A',this)">N/A</button></div></td><td><input class="notes" data-note="13" placeholder="Catatan / tindakan..."></td></tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<div class="summary-box"><div class="summary-label">Total Item</div><div class="summary-number total-number" id="totalItems">13</div></div>
+<div class="summary-box"><div class="summary-label">Checked</div><div class="summary-number total-number" id="checkedItems">0</div></div>
+<div class="summary-box"><div class="summary-label">OK</div><div class="summary-number ok-number" id="okItems">0</div></div>
+<div class="summary-box"><div class="summary-label">NOT OK</div><div class="summary-number notok-number" id="notOkItems">0</div></div>
+</div>
+<div class="progress-container"><div class="progress-info"><span>Progress Inspeksi</span><span id="progressText">0%</span></div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div></div>
+</section>
+
+<section class="card no-print">
+<div class="action-bar">
+<button class="btn btn-save" onclick="saveDraft()">💾 Simpan Data</button>
+<button class="btn btn-print" onclick="printReport()">🖨️ Cetak / PDF</button>
+<button class="btn btn-reset" onclick="resetForm()">↻ Reset</button>
+<button class="btn btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Atas</button>
+</div>
+</section>
+<div class="footer">Checklist K3 Tambang • PWA • Data draft tersimpan di perangkat ini</div>
+</main>
+
+<div class="install-banner" id="installBanner">📱 Install Checklist K3 sebagai aplikasi<button onclick="installApp()">INSTALL</button></div>
+<nav class="bottom-nav no-print">
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span>⌂</span>Data</button>
+<button onclick="document.getElementById('inspectionTable').scrollIntoView({behavior:'smooth'})"><span>☑</span>Checklist</button>
+<button onclick="saveDraft()"><span>💾</span>Simpan</button>
+<button onclick="printReport()"><span>🖨</span>PDF</button>
+</nav>
+
+<script>
+const statuses={};
+let deferredPrompt=null;
+const STORAGE_KEY="checklistK3DraftV2";
+
+function setStatus(id,status,button){
+ statuses[id]=status;
+ const row=document.querySelector('tr[data-id="'+id+'"]');
+ row.querySelectorAll(".status-btn").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ row.classList.toggle("not-ok-row",status==="NOT OK");
+ updateSummary(); saveDraft(true);
+}
+function updateSummary(){
+ const total=document.querySelectorAll("tr.item-row").length;
+ let checked=0,ok=0,notOk=0;
+ Object.values(statuses).forEach(s=>{if(s)checked++;if(s==="OK")ok++;if(s==="NOT OK")notOk++});
+ document.getElementById("totalItems").textContent=total;
+ document.getElementById("checkedItems").textContent=checked;
+ document.getElementById("okItems").textContent=ok;
+ document.getElementById("notOkItems").textContent=notOk;
+ const p=total?Math.round(checked/total*100):0;
+ document.getElementById("progressFill").style.width=p+"%";
+ document.getElementById("progressText").textContent=p+"%";
+}
+function setDefaultDateTime(){
+ const now=new Date(),offset=now.getTimezoneOffset();
+ document.getElementById("inspectionDate").value=new Date(now.getTime()-offset*60000).toISOString().slice(0,16);
+}
+function collectData(){
+ const notes={};
+ document.querySelectorAll(".notes").forEach(i=>notes[i.dataset.note]=i.value);
+ return {inspector:inspector.value,crew:crew.value,area:area.value,inspectionDate:inspectionDate.value,statuses:{...statuses},notes};
+}
+function saveDraft(silent=false){
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(collectData()));
+ if(!silent) alert("Data inspeksi berhasil disimpan di perangkat.");
+}
+function loadDraft(){
+ const raw=localStorage.getItem(STORAGE_KEY);
+ if(!raw)return;
+ try{
+  const d=JSON.parse(raw);
+  inspector.value=d.inspector||"";crew.value=d.crew||"";area.value=d.area||"";inspectionDate.value=d.inspectionDate||"";
+  Object.assign(statuses,d.statuses||{});
+  Object.entries(d.notes||{}).forEach(([id,val])=>{const i=document.querySelector('.notes[data-note="'+id+'"]');if(i)i.value=val});
+  Object.entries(statuses).forEach(([id,status])=>{
+   const row=document.querySelector('tr[data-id="'+id+'"]');if(!row)return;
+   row.classList.toggle("not-ok-row",status==="NOT OK");
+   const btn=[...row.querySelectorAll(".status-btn")].find(b=>b.textContent.includes(status==="NOT OK"?"NOT OK":status));
+   if(btn)btn.classList.add("active");
+  });
+ }catch(e){console.error(e)}
+ updateSummary();
+}
+function resetForm(){
+ if(!confirm("Hapus seluruh data inspeksi dan mulai baru?"))return;
+ localStorage.removeItem(STORAGE_KEY);
+ Object.keys(statuses).forEach(k=>delete statuses[k]);
+ document.getElementById("inspector").value="";
+ document.getElementById("crew").value="";
+ document.getElementById("area").value="";
+ setDefaultDateTime();
+ document.querySelectorAll(".status-btn").forEach(b=>b.classList.remove("active"));
+ document.querySelectorAll(".item-row").forEach(r=>r.classList.remove("not-ok-row"));
+ document.querySelectorAll(".notes").forEach(i=>i.value="");
+ updateSummary();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function printReport(){
+ if(!inspector.value.trim()){alert("Isi Nama Pemeriksa terlebih dahulu.");inspector.focus();return}
+ if(!crew.value){alert("Pilih Crew / Shift terlebih dahulu.");crew.focus();return}
+ if(!area.value){alert("Pilih Area Kerja / Zona terlebih dahulu.");area.focus();return}
+ saveDraft(true); window.print();
+}
+document.querySelectorAll("input,select").forEach(i=>i.addEventListener("input",()=>saveDraft(true)));
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;document.getElementById("installBanner").style.display="block"});
+async function installApp(){
+ if(!deferredPrompt){alert("Jika tombol install belum muncul, buka menu browser lalu pilih 'Tambahkan ke layar utama' atau 'Install app'.");return}
+ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null;document.getElementById("installBanner").style.display="none";
+}
+window.addEventListener("appinstalled",()=>document.getElementById("installBanner").style.display="none");
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(console.error));
+setDefaultDateTime();loadDraft();updateSummary();
+</script>
+</body>
+</html>
