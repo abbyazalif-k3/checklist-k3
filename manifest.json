@@ -1,15 +1,9 @@
 {
-  "name": "Checklist K3 Tambang",
+  "name": "Checklist Inspeksi K3 Tambang",
   "short_name": "Checklist K3",
-  "description": "Checklist Inspeksi Area dan Keselamatan Kerja Tambang",
-  "start_url": "./",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#e9edf1",
-  "theme_color": "#17212b",
-  "orientation": "any",
-  "lang": "id-ID",
-  "icons": [
-    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
-  ]
+  "background_color": "#eef2f5",
+  "theme_color": "#172536",
+  "icons": []
 }
