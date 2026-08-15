@@ -1,47 +1,26 @@
-// AI AGENT - CHECKLIST K3
-// Versi awal: mengatur alur analisis temuan inspeksi
+import { evaluasiStatus } from "../rules.js";
 
+/*
+ * AI AGENT — CHECKLIST K3
+ *
+ * Status:
+ * 1 = Tidak Aman → AI aktif
+ * 2 = Normal → AI tidak aktif
+ * 3 = Sangat Normal → AI tidak aktif
+ */
+
+// Cek status menggunakan aturan utama rules.js
 function cekStatus(status) {
-    const nilai = Number(status);
-
-    if (nilai === 1) {
-        return {
-            kode: 1,
-            status: "Tidak Aman",
-            perluAnalisisAI: true
-        };
-    }
-
-    if (nilai === 2) {
-        return {
-            kode: 2,
-            status: "Normal",
-            perluAnalisisAI: false
-        };
-    }
-
-    if (nilai === 3) {
-        return {
-            kode: 3,
-            status: "Sangat Normal",
-            perluAnalisisAI: false
-        };
-    }
-
-    return {
-        kode: 0,
-        status: "Status tidak valid",
-        perluAnalisisAI: false
-    };
+    return evaluasiStatus(status);
 }
 
 
-// Menyiapkan data yang akan dianalisis AI
+// Menyiapkan data temuan untuk AI
 function buatPermintaanAI(data) {
     const hasil = cekStatus(data.status);
 
-    // AI hanya bekerja jika ditemukan status 1
-    if (!hasil.perluAnalisisAI) {
+    // AI hanya bekerja untuk status 1
+    if (!hasil.perluAI) {
         return null;
     }
 
@@ -61,7 +40,7 @@ function buatPermintaanAI(data) {
 async function jalankanAgent(data) {
     const permintaan = buatPermintaanAI(data);
 
-    // Tidak ada status 1 → tidak perlu AI
+    // Tidak ada status 1
     if (!permintaan) {
         return {
             berhasil: true,
@@ -69,9 +48,6 @@ async function jalankanAgent(data) {
             pesan: "Tidak ada temuan tidak aman."
         };
     }
-
-    // Untuk sementara kita hanya menyiapkan data.
-    // AI Lokal dan AI Cloud akan dipasang pada tahap berikutnya.
 
     return {
         berhasil: true,
@@ -81,7 +57,6 @@ async function jalankanAgent(data) {
 }
 
 
-// Export untuk digunakan oleh aplikasi
 export {
     cekStatus,
     buatPermintaanAI,

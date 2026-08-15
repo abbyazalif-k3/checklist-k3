@@ -1,5 +1,5 @@
-import { cekStatus } from "./agen.js";
-import { analisisDenganAIlocal } from "./penyedia/local.js";
+import { cekStatus } from "./agent.js";
+import { analisisDenganAIlocal } from "./providers/local.js";
 import { analisisDenganAICloud } from "./penyedia/cloud.js";
 
 /*
@@ -16,9 +16,9 @@ import { analisisDenganAICloud } from "./penyedia/cloud.js";
 async function jalankanRouter(data) {
 
     // Periksa status inspeksi
-    const status = cekStatus(data);
+    const status = cekStatus(data.status);
 
-    // Tidak ada status 1
+    // Status 2 atau 3 → tidak perlu AI
     if (!status.perluAI) {
         return {
             berhasil: true,
@@ -28,7 +28,7 @@ async function jalankanRouter(data) {
         };
     }
 
-    // Ada status 1 → gunakan AI Lokal
+    // Status 1 → coba AI Lokal
     const lokal = await analisisDenganAIlocal(data);
 
     if (lokal.berhasil) {
