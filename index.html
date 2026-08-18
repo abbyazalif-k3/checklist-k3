@@ -58,9 +58,9 @@ function renderChecklist(){
         <div class="item-head"><b>${no}.</b><span>${text}</span></div>
         <div class="rating">
           <span class="label">Peringkat:</span>
-          <button type="button" data-rate="1">1 — Buruk</button>
-          <button type="button" data-rate="2">2 — Bagus</button>
-          <button type="button" data-rate="3">3 — Sangat Bagus</button>
+          <button type="button" data-rate="1">1 — Tidak Aman</button>
+          <button type="button" data-rate="2">2 — Normal</button>
+          <button type="button" data-rate="3">3 — Sangat Normal</button>
         </div>
         <textarea placeholder="Temuan / catatan (opsional)" aria-label="Temuan"></textarea>`;
       row.dataset.section=section; row.dataset.text=text; row.dataset.no=no;
@@ -86,15 +86,58 @@ function collect(){
     savedAt:new Date().toISOString()
   };
 }
-function save(){
+async function save(){
   if(!$('#inspector').value.trim()||!$('#shift').value||!$('#area').value){
-    alert('Lengkapi Nama Pemeriksa, Shift, dan Area terlebih dahulu.'); return;
+    alert('Lengkapi Nama Pemeriksa, Shift, dan Area terlebih dahulu.');
+    return;
   }
+
   const r=collect();
-  state.records.unshift(r); localStorage.setItem('k3_records',JSON.stringify(state.records));
-  $('#status').textContent=`Tersimpan di perangkat: ${new Date().toLocaleString('id-ID')}`;
-  alert('Checklist berhasil disimpan di perangkat ini.');
-  renderHistory();
+
+  try {
+    $('#status').textContent='Menyimpan data ke server...';
+
+    const response=await fetch('/api/inspections',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(r)
+    });
+
+    const result=await response.json();
+
+    if(!response.ok||!result.berhasil){
+      throw new Error(result.error||'Gagal menyimpan data ke server.');
+    }
+
+    // Backup lokal
+    state.records.unshift(r);
+
+    $('#status').textContent=
+      `Tersimpan ke server: ${new Date().toLocaleString('id-ID')}`;
+
+    alert('Checklist berhasil disimpan ke server.');
+
+    await renderHistory();
+
+  } catch(error) {
+    console.error(error);
+
+    // Jika server gagal, tetap simpan lokal
+    state.records.unshift(r);
+    localStorage.setItem('k3_records',JSON.stringify(state.records));
+
+    $('#status').textContent=
+      'Server tidak tersedia. Data disimpan sementara di perangkat.';
+
+    alert(
+      'Server tidak dapat dihubungi.\n\n' +
+      'Data tetap disimpan di perangkat sebagai backup.'
+    );
+
+    renderHistory();
+  }
 }
 function renderHistory(){
   const h=$('#history');
