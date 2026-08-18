@@ -207,9 +207,44 @@ async function renderHistory(){
   }
 }
 window.viewRecord=i=>{
-  const r=state.records[i], rated=r.items.filter(x=>x.rating).length, findings=r.items.filter(x=>x.finding).length;
-  alert(`Area: ${r.area}\nPemeriksa: ${r.inspector}\nShift: ${r.shift}\nPeringkat terisi: ${rated}/${r.items.length}\nTemuan dicatat: ${findings}\n\nGunakan tombol JSON untuk arsip data.`);
+  const r=state.records[i];
+  if(!r) return;
+
+  const items=r.items || [];
+  const unsafe=items.filter(x=>String(x.rating)==='1');
+  const findings=items.filter(x=>x.finding);
+
+  let detail=`Area: ${r.area || '-'}
+Pemeriksa: ${r.inspector || '-'}
+Shift: ${r.shift || '-'}
+Tanggal: ${new Date(r.datetime || r.savedAt).toLocaleString('id-ID')}
+
+`;
+
+  if(unsafe.length){
+    detail+=`⚠️ TIDAK AMAN: ${unsafe.length} item
+
+`;
+    unsafe.forEach(x=>{
+      detail+=`Item ${x.no}: ${x.description}
+`;
+      detail+=`Temuan: ${x.finding || '-'}
+
+`;
+    });
+  }else{
+    detail+='✅ Tidak ada kondisi tidak aman.\n';
+  }
+
+  if(findings.length){
+    detail+=`
+
+Temuan dicatat: ${findings.length}`;
+  }
+
+  alert(detail);
 };
+
 window.downloadRecord=i=>{
   const r=state.records[i], a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
