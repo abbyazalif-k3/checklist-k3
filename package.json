@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/abbyazalif-k3/checklist-k3#readme",
   "dependencies": {
-    "@google/genai": "^2.17.1",
     "express": "^5.2.1"
   }
 }

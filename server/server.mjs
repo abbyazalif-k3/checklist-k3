@@ -92,34 +92,8 @@ app.delete("/api/inspections/:id", async (req, res) => {
     }
 });
 
-// Analisis AI
-app.post("/api/analyze", async (req, res) => {
-    try {
-        const data = req.body;
-
-        if (Number(data.status) !== 1) {
-            return res.json({
-                berhasil: true,
-                perluAI: false,
-                sumber: "Agent",
-                hasil: "Tidak ditemukan kondisi tidak aman."
-            });
-        }
-
-        const { analisisDenganGemini } = await import("./gemini.mjs");
-        const hasil = await analisisDenganGemini(data);
-
-        res.json(hasil);
-    } catch (error) {
-        res.status(500).json({
-            berhasil: false,
-            error: error.message
-        });
-    }
-});
-
 app.listen(PORT, () => {
     console.log(
-        `Checklist K3 AI Server berjalan di http://localhost:${PORT}`
+        `Checklist K3 Server berjalan di http://localhost:${PORT}`
     );
 });
