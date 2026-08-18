@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/abbyazalif-k3/checklist-k3#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "express": "^5.2.1"
   }
 }

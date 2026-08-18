@@ -35,12 +35,19 @@ const $ = s => document.querySelector(s);
 const state = {records: JSON.parse(localStorage.getItem('k3_records') || '[]')};
 
 function nowLocal(){
-  const d=new Date(), p=n=>String(n).padStart(2,'0');
+ 
+ const d=new Date(), p=n=>String(n).padStart(2,'0');
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
-function renderAreas(){
-  $('#area').innerHTML='<option value="">-- Pilih area --</option>'+
-    Object.keys(DATA).map(a=>`<option>${a}</option>`).join('');
+function renderAreas() {
+  const area = document.getElementById("area");
+
+  area.innerHTML = `
+    <option value="">-- Pilih area --</option>
+    <option value="Elution Area">Elution Area</option>
+    <option value="Mill #3 dan Scat Crusher">Mill #3 dan Scat Crusher</option>
+    <option value="Reagent Mixing Area">Reagent Mixing Area</option>
+  `;
 }
 function renderChecklist(){
   const area=$('#area').value, wrap=$('#checklist');
@@ -139,15 +146,65 @@ async function save(){
     renderHistory();
   }
 }
-function renderHistory(){
-  const h=$('#history');
-  if(!state.records.length){h.innerHTML='<div class="empty">Belum ada inspeksi tersimpan.</div>';return;}
-  h.innerHTML=state.records.map((r,i)=>`
-    <div class="history-card">
-      <b>${r.area}</b><div>${r.inspector} • ${r.shift}</div>
-      <small>${new Date(r.datetime||r.savedAt).toLocaleString('id-ID')} • ${r.items.length} item</small>
-      <div class="history-actions"><button onclick="viewRecord(${i})">Lihat</button><button onclick="downloadRecord(${i})">JSON</button><button class="danger" onclick="deleteRecord(${i})">Hapus</button></div>
-    </div>`).join('');
+async function renderHistory(){
+  const h = $('#history');
+
+  try {
+    const response = await fetch(API_URL);
+    const result = await response.json();
+
+    if(!response.ok || !result.berhasil){
+      throw new Error(result.message || 'Gagal mengambil data inspeksi');
+    }
+
+    state.records = result.data || [];
+
+    if(!state.records.length){
+      h.innerHTML = '<div class="empty">Belum ada inspeksi tersimpan.</div>';
+      return;
+    }
+
+    h.innerHTML = state.records.map((r,i)=>`
+      <div class="history-card">
+        <b>${r.area || '-'}</b>
+        <div>${r.inspector || '-'} • ${r.shift || '-'}</div>
+        <small>
+          ${new Date(r.datetime || r.savedAt).toLocaleString('id-ID')}
+          • ${(r.items || []).length} item
+        </small>
+
+        <div class="history-actions">
+          <button onclick="viewRecord(${i})">Lihat</button>
+<button onclick="downloadRecord(${i})">JSON</button>
+<button class="danger" onclick="deleteRecord(${i})">Hapus</button>
+        </div>
+      </div>
+    `).join('');
+
+  } catch(error) {
+    console.error('Gagal mengambil riwayat:', error);
+
+    if(state.records.length){
+      h.innerHTML = state.records.map((r,i)=>`
+        <div class="history-card">
+          <b>${r.area || '-'}</b>
+          <div>${r.inspector || '-'} • ${r.shift || '-'}</div>
+          <small>
+            ${new Date(r.datetime || r.savedAt).toLocaleString('id-ID')}
+            • ${(r.items || []).length} item
+          </small>
+
+          <div class="history-actions">
+            <button onclick="viewRecord(${i})">Lihat</button>
+            <button onclick="downloadRecord(${i})">JSON</button>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      h.innerHTML =
+        '<div class="empty">Gagal mengambil data dari server.</div>';
+    }
+  }
 }
 window.viewRecord=i=>{
   const r=state.records[i], rated=r.items.filter(x=>x.rating).length, findings=r.items.filter(x=>x.finding).length;
@@ -158,16 +215,156 @@ window.downloadRecord=i=>{
   a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
   a.download=`checklist-k3-${r.area.replaceAll(' ','-')}-${r.id}.json`; a.click(); URL.revokeObjectURL(a.href);
 };
-window.deleteRecord=i=>{
-  if(confirm('Hapus data inspeksi ini dari perangkat?')){state.records.splice(i,1);localStorage.setItem('k3_records',JSON.stringify(state.records));renderHistory();}
+window.deleteRecord = async i => {
+  const r = state.records[i];
+
+  if (!r) return;
+
+  if (!confirm(`Hapus inspeksi ${r.area} dari server?`)) return;
+
+  try {
+    const response = await fetch(`${API_URL}/${r.id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.berhasil) {
+      throw new Error(result.error || 'Gagal menghapus data.');
+    }
+
+    alert('✅ Inspeksi berhasil dihapus dari Supabase.');
+
+    await renderHistory();
+
+  } catch (error) {
+    console.error('Gagal menghapus inspeksi:', error);
+
+    alert(
+      '❌ Gagal menghapus inspeksi dari server.\n\n' +
+      error.message
+    );
+  }
 };
 $('#area').onchange=renderChecklist;
 $('#datetime').value=nowLocal();
 $('#save').onclick=save;
 $('#reset').onclick=()=>{if(confirm('Kosongkan checklist yang sedang diisi?')){document.querySelectorAll('textarea').forEach(x=>x.value='');document.querySelectorAll('[data-rate]').forEach(x=>x.classList.remove('selected'));}};
-$('#clearAll').onclick=()=>{if(confirm('Hapus SEMUA data tersimpan di perangkat ini?')){state.records.length=0;localStorage.removeItem('k3_records');renderHistory();}};
+$('#clearAll').onclick = async () => {
+  if (!confirm('Hapus SEMUA data inspeksi dari Supabase?')) return;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.berhasil) {
+      throw new Error(result.error || 'Gagal menghapus semua data.');
+    }
+
+    state.records = [];
+    localStorage.removeItem('k3_records');
+
+    alert('✅ Semua data inspeksi berhasil dihapus dari Supabase.');
+
+    await renderHistory();
+
+  } catch (error) {
+    console.error('Gagal menghapus semua data:', error);
+
+    alert(
+      '❌ Gagal menghapus semua data.\n\n' +
+      error.message
+    );
+  }
+};
 $('#exportAll').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state.records,null,2)],{type:'application/json'}));a.download='arsip-checklist-k3.json';a.click();};
+const API_URL = "/api/inspections";
 renderAreas(); renderHistory();
 </script>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
-</body></html>
+<script>
+
+document.getElementById("save").addEventListener("click", async () => {
+  const inspector = document.getElementById("inspector").value.trim();
+  const shift = document.getElementById("shift").value;
+  const area = document.getElementById("area").value;
+  const datetime = document.getElementById("datetime").value;
+
+  if (!inspector || !shift || !area || !datetime) {
+    alert("Lengkapi Nama Pemeriksa, Shift, Area, dan Tanggal/Waktu.");
+    return;
+  }
+
+  const items = [];
+
+  document.querySelectorAll(".item").forEach((row, index) => {
+    const text = row.querySelector(".item-head span")?.textContent?.trim() || "";
+
+    const selected = row.querySelector("button.selected");
+    const rating = selected?.dataset.rate || "";
+
+    const finding =
+      row.querySelector("textarea")?.value?.trim() || "";
+
+    const section =
+      row.closest(".section")?.querySelector(".section-title span")
+        ?.textContent?.trim() || "";
+
+    items.push({
+      no: index + 1,
+      section,
+      description: text,
+      rating,
+      finding
+    });
+  });
+
+  const payload = {
+    inspector,
+    shift,
+    area,
+    code: DATA[area]?.code || "",
+    datetime: new Date(datetime).toISOString(),
+    items
+  };
+
+  try {
+    document.getElementById("status").textContent =
+      "⏳ Menyimpan ke server...";
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.berhasil) {
+      throw new Error(
+        result.pesan || result.message || "Gagal menyimpan"
+      );
+    }
+
+    document.getElementById("status").textContent =
+      "✅ Berhasil tersimpan ke Supabase.";
+
+    alert("✅ Inspeksi berhasil disimpan ke Supabase.");
+
+    console.log("SUPABASE:", result);
+
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("status").textContent =
+      "❌ Gagal menyimpan ke server.";
+
+    alert("❌ Gagal menyimpan:\n" + error.message);
+  }
+});
+</script></body></html>

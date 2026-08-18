@@ -1,54 +1,64 @@
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const DATA_FILE = path.join(__dirname, "inspections.json");
-
-async function readInspections() {
-    try {
-        const data = await fs.readFile(DATA_FILE, "utf8");
-        return JSON.parse(data);
-    } catch (error) {
-        if (error.code === "ENOENT") {
-            return [];
-        }
-        throw error;
-    }
-}
-
-async function writeInspections(records) {
-    await fs.writeFile(
-        DATA_FILE,
-        JSON.stringify(records, null, 2),
-        "utf8"
-    );
-}
+import { supabase } from "./supabase.mjs";
 
 export async function getInspections() {
-    return await readInspections();
+    const { data, error } = await supabase
+        .from("inspeksi")
+        .select("*")
+        .order("savedAt", { ascending: false });
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
 }
 
 export async function saveInspection(record) {
-    const records = await readInspections();
+    const row = {
+        id: record.id || Date.now(),
+        inspector: record.inspector,
+        shift: record.shift,
+        area: record.area,
+        code: record.code || null,
+        datetime: record.datetime || null,
+        items: record.items || [],
+        savedAt: record.savedAt || new Date().toISOString()
+    };
 
-    records.unshift(record);
+    const { data, error } = await supabase
+        .from("inspeksi")
+        .insert(row)
+        .select()
+        .single();
 
-    await writeInspections(records);
+    if (error) {
+        throw error;
+    }
 
-    return record;
+    return data;
 }
 
 export async function deleteInspection(id) {
-    const records = await readInspections();
+    const { error } = await supabase
+        .from("inspeksi")
+        .delete()
+        .eq("id", id);
 
-    const filtered = records.filter(
-        record => String(record.id) !== String(id)
-    );
+    if (error) {
+        throw error;
+    }
 
-    await writeInspections(filtered);
+    return true;
+}
+export async function deleteAllInspections() {
+    const { error } = await supabase
+        .from("inspeksi")
+        .delete()
+        .not("id", "is", null);
 
-    return filtered.length !== records.length;
+    if (error) {
+        throw error;
+    }
+
+    return true;
 }
