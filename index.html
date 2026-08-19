@@ -14,6 +14,7 @@ main{max-width:1000px;margin:auto;padding:16px}.card{background:#fff;border-radi
 .section{margin:12px 16px;border:1px solid #d4dce2;border-radius:12px;overflow:hidden}.section-title{background:#e9eef2;padding:11px 13px;font-weight:900;display:flex;justify-content:space-between}.section-title small{font-weight:600;color:#667}
 .item{padding:14px;border-top:1px solid #e0e5e8}.item-head{display:grid;grid-template-columns:30px 1fr;gap:7px;line-height:1.4}.rating{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}.label{font-size:13px;font-weight:800;margin-right:2px}.rating button{border:1px solid #bcc6ce;background:#fff;border-radius:8px;padding:7px 9px;font-weight:700}.rating button.selected{background:#172536;color:#fff;border-color:#172536}
 .history-card{border-top:1px solid #e0e5e8;padding:14px 16px}.history-card b{font-size:16px}.history-card div,.history-card small{display:block;margin-top:4px;color:#5c6871}.history-actions{display:flex!important;gap:7px!important;flex-wrap:wrap;margin-top:10px!important}.history-actions button{border:0;border-radius:8px;padding:8px 11px;background:#e7edf1;font-weight:700}.history-actions .danger{background:#d94a4a;color:white}
+.modal-overlay{position:fixed;inset:0;z-index:1000;background:#172536b8;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}.modal-overlay[hidden]{display:none}.modal{width:min(100%,700px);max-height:calc(100vh - 32px);background:#fff;border-radius:16px;box-shadow:0 12px 40px #00000040;overflow:hidden;display:flex;flex-direction:column}.modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#263b4d;color:#fff;padding:14px 16px;border-left:7px solid #f4b400}.modal-header h2{margin:0;font-size:18px}.modal-close{border:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:4px 7px;cursor:pointer}.modal-body{padding:16px;overflow-y:auto}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}.detail-grid div{padding:10px 12px;background:#eef2f5;border-radius:10px}.detail-grid b{display:block;font-size:12px;color:#667;margin-bottom:3px}.unsafe-box,.finding-box,.safe-box{padding:12px 14px;border-radius:10px;margin-top:12px}.unsafe-box{background:#fff0f0;border:1px solid #efb2b2;color:#8b2424}.finding-box{background:#fff8df;border:1px solid #efd27c;color:#6f5600}.safe-box{background:#edf8f0;border:1px solid #afd5b9;color:#2d6a43}.modal-body h3{margin:0 0 8px;font-size:16px}.modal-body p{margin:6px 0;line-height:1.45}.modal-footer{display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid #e0e5e8}
 @media(max-width:700px){.form{grid-template-columns:1fr}.full{grid-column:auto}.title{font-size:17px}.section{margin:10px}.item{padding:12px}}
 </style></head>
 <body>
@@ -28,6 +29,18 @@ main{max-width:1000px;margin:auto;padding:16px}.card{background:#fff;border-radi
 <div class="card"><h2>🛡️ CHECKLIST INSPEKSI <span id="count" style="float:right;font-size:12px;font-weight:600"></span></h2><div id="checklist"></div>
 <div class="toolbar"><button class="btn" id="save">💾 Simpan Inspeksi</button><button class="btn secondary" id="reset">↺ Kosongkan Form</button></div><div class="status" id="status">Data inspeksi disimpan ke server dan database Supabase.</div></div>
 <div class="card"><h2>🗂️ DATA INSPEKSI TERSIMPAN</h2><div class="toolbar"><button class="btn secondary" id="exportAll">⬇️ Arsip Semua Data</button><button class="btn danger" id="clearAll">Hapus Semua Data</button></div><div id="history"></div></div>
+<div id="detailModal" class="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+    <div class="modal-header">
+      <h2 id="detailModalTitle">DETAIL INSPEKSI</h2>
+      <button type="button" class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div id="detailModalBody" class="modal-body"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn secondary" onclick="closeDetailModal()">Tutup</button>
+    </div>
+  </div>
+</div>
 </main>
 <script>const DATA={"Elution Area": {"code": "TT-PRO-FO-62-001", "sections": {"GENERAL": ["Periksa kerapihan/kebersihan semua area, termasuk area bund, catwalks, grid mesh dan akses jalan terbebas dari bahaya tersandung, sampah, dan semua selang yang tidak digunakan telah digulung rapi", "Periksa kondisi flooring", "Periksa apakah Safety Showers/Eyewash berfungsi", "Periksa tempat sampah tidak penuh", "Periksa apakah Fire Extinguisher ada pada tempatnya", "Periksa suplai air decant di area elution", "Periksa kondisi sump pump di area elution", "Periksa timbunan oli di lantai heater dan bersihkan jika ada", "Periksa pH meter portable berfungsi dengan baik dan disimpan secara tepat (probe terendam air)", "Periksa kondisi instrument pengukur seperti pressure gauge, level sensor, dan flow sensor."], "CARBON SCREEN": ["Periksa kebersihan dan ketersediaan semua carbon de-watering screens", "Periksa kebocoran pipa dan sumbatan di water sprays", "Periksa panel screen tidak tersumbat", "Periksa baut pada vibrator screen"], "ACID COLUMN": ["Periksa kebocoran di semua tangki, pipa dan area bunded", "Periksa kebocoran dari strainer di dalam acid column", "Periksa kondisi valve di top dan bottom column"], "ELUTION COLUMN": ["Periksa status dan kesiapan elution column", "Periksa level oli di elution heater", "Periksa kondisi erat penahan cover strainer", "Periksa kondisi O-ring bracket strainer", "Periksa kebocoran oli di elution heater", "Periksa kebocoran di line sianida", "Periksa kebocoran di line caustic soda", "Periksa kondisi filter", "Periksa dan pastikan tidak ada kebocoran di elution circuit", "Periksa kondisi relief valve di elution column 1 dan 2", "Periksa kebocoran di heat exchanger", "Periksa kondisi pompa sulphamic acid dan unit tangki mixing", "Apakah ada injeksi sulphamic acid ke Heat Exchanger."], "ELECTROWINNING": ["Periksa kebocoran di semua tangki, pipa dan area bunded", "Periksa rectifier berfungsi normal"], "REAGEN KILN": ["Periksa status dan kesiapan kiln", "Periksa kebocoran pada semua pipa dan pompa", "Periksa level karbon di kiln hopper dan quench tank", "Periksa kondisi pompa transfer karbon di quench tank", "Periksa kondisi air flushing", "Periksa kondisi pompa 62PU009", "Periksa kondisi pompa 62PU008", "Periksa temperatur kiln", "Periksa kondisi screw feeder", "Periksa kondisi burner", "Periksa kondisi sistem sprinkler"], "REAGEN DAN PENGGUNAANNYA": ["Periksa level tangki storage acid, kebocoran pipa, kebersihan bund dan kesiapan pompa untuk dipompakan", "Periksa level tangki solar dan level burner oil", "Periksa dan pastikan air di dalam prep tank dalam kondisi penuh"]}}, "Mill #3 dan Scat Crusher": {"code": "TT-PRO-FO-32-002", "sections": {"AREA LANTAI DASAR": ["Kebersihan area umum", "Kondisi IBC level penampung oli dan grease", "Kondisi sump pump dan screen", "Kondisi pompa discharge ball mill", "Kondisi lantai dari tumpahan oli / grease", "Kondisi air untuk gland packing", "Kondisi lampu dan penerangan", "Periksa kondisi pompa standby untuk ball mill discharge", "Periksa kondisi pompa gland seal", "Periksa kondisi tangki gland seal", "Level grease ball mill dalam drum (%)", "Periksa ukuran keluaran material dari trommel ball mill"], "AREA OLI PELUMAS": ["Kondisi Ball Mill Lube System dan oil trap", "Level Ball Mill Lube Oil (%)", "Tekanan pompa Ball Mill bearing lube", "Tekanan pompa Ball Mill gear box", "Tekanan pompa Ball Mill motor lube oil", "Tekanan oli pompa high pressure Ball Mill (kPa)", "Tekanan oli pompa low pressure Ball Mill (kPa)", "Level gauge"], "AREA BALL MILL": ["Kebersihan lantai", "Kondisi mur dan baut mill", "Kondisi feed chute mill", "Kondisi inching drive mill", "Kondisi Fire Hydrant Hose Reel, valve dan nozzle", "Kondisi APAR, safety shower dan eye wash", "Kondisi level ball mill hopper dan sensor level (%)", "Periksa apakah ada air yang keluar dari trunnion mill", "Periksa level hopper bola baja", "Periksa auto feeder bola baja"], "AREA CYCLONE": ["Kebersihan lantai", "Kebersihan cyclone", "Kondisi discharge cyclone O/F", "Kondisi discharge cyclone U/F", "Pressure Cyclone Distributor (kPa)", "Periksa kebocoran di air tubing hose", "Periksa kebocoran di cyclone"], "AREA OVERHEAD CRANE": ["Periksa kondisi umum crane", "Periksa kondisi kabel hoist / hoist cable (sling)", "Periksa kondisi remote atau pendant control"], "SCAT CRUSHER": ["Kondisi conveyor belt dan roller sistem scat", "Periksa kondisi skirting, roller, dan scrapper CV05, 06, dan 07", "Kondisi walk way sekitar conveyor scat crusher", "Periksa flop gate konveyor 04", "Periksa kecepatan vibrator feeder", "Periksa kondisi motor scat crusher", "Periksa kondisi V-belt motor", "Periksa level oli hidrolik dan lube grease", "Periksa amperemeter dan kW", "Periksa magnet separator CV07", "Periksa motor konveyor scat", "Periksa ukuran material scat, apakah perlu dilakukan adjust scat crusher?", "Periksa mantel dan concave", "Kondisi safety guard dari mill", "Kondisi safety sign", "Kondisi lampu dan penerangan"]}}, "Reagent Mixing Area": {"code": "TT-PRO-FO-71-001", "sections": {"APD": ["Periksa full face respirator dalam kondisi bersih, tidak ada goresan dan Anda dapat melihat dengan jelas", "Periksa masker muka dalam kondisi baik dan menutup rapat", "Periksa kanister respirator yang digunakan telah tepat dan tidak kedaluwarsa", "Periksa sarung tangan PVC, pakaian coverall dan sepatu boot karet sudah tersedia"], "GENERAL": ["Periksa kebutuhan pencampuran reagent harian dengan supervisor", "Periksa kebersihan area secara umum, kebersihan di dalam area bunded, potensi bahaya tersandung dan sampah di area grid mesh dan jalan umum serta semua selang digulung dengan rapi saat tidak digunakan", "Periksa semua safety shower/eyewash berfungsi baik", "Periksa MSDS dan rambu-rambu keselamatan terpasang dan dapat terlihat dengan jelas", "Periksa tempat sampah telah dikosongkan", "Periksa APAR terpasang di tempatnya", "Periksa kondisi lantai dari karatan", "Periksa Hose Rail", "Pemeriksaan pre-start Overhead Crane telah dilakukan", "Periksa kontainer yang sudah penuh dan laporkan agar dipindahkan", "Pastikan karung bekas tidak tercampur dengan karung lain terutama untuk sianida dan lime", "Pisahkan palet yang masih bisa dipakai dengan palet yang sudah rusak dan pastikan palet tidak menumpuk dan menghalangi fasilitas emergency (fire hydrant)"], "AREA MIXING": ["Periksa tidak ada suara aneh, panas, getaran dan kebocoran oli dari agitator tangki mixing", "Periksa tumpahan atau sampah di sekitar area", "Periksa kebocoran di tangki mixing dan storage", "Periksa retakan dan kebocoran di dinding bunded", "Periksa ketersediaan pompa transfer dan dosing pump", "Periksa kebocoran di pipa", "Periksa sump pump berfungsi dan tidak ada kebocoran di pipa", "Periksa screen sump pump dari sumbatan/kotoran"], "PENYIMPANAN REAGEN": ["Periksa stok reagent mencukupi kebutuhan harian", "Periksa kerusakan pada karung reagent dan tumpahan. Bersihkan tumpahan secepatnya."], "WATER TREATMENT PLANT": ["Periksa kebersihan area kontainer WTP", "Periksa tekanan saringan dan lakukan backflush"]}}};</script>
 <script>
@@ -242,8 +255,63 @@ Tanggal: ${new Date(r.datetime || r.savedAt).toLocaleString('id-ID')}
 Temuan dicatat: ${findings.length}`;
   }
 
-  alert(detail);
+  const modal=document.getElementById('detailModal');
+  const body=document.getElementById('detailModalBody');
+  body.replaceChildren();
+
+  const grid=document.createElement('div');
+  grid.className='detail-grid';
+  [['Area',r.area],['Pemeriksa',r.inspector],['Shift',r.shift],['Tanggal',new Date(r.datetime || r.savedAt).toLocaleString('id-ID')],['Total item',String(items.length)]].forEach(([label,value])=>{
+    const cell=document.createElement('div');
+    const title=document.createElement('b');
+    title.textContent=label;
+    const text=document.createElement('span');
+    text.textContent=value || '-';
+    cell.append(title,text);
+    grid.appendChild(cell);
+  });
+  body.appendChild(grid);
+
+  if(unsafe.length){
+    const box=document.createElement('div');
+    box.className='unsafe-box';
+    const title=document.createElement('h3');
+    title.textContent=`⚠️ TIDAK AMAN — ${unsafe.length} ITEM`;
+    box.appendChild(title);
+    unsafe.forEach(item=>{
+      const detailItem=document.createElement('p');
+      detailItem.textContent=`Item ${item.no || '-'}: ${item.description || '-'}${item.finding ? ` | Temuan: ${item.finding}` : ''}`;
+      box.appendChild(detailItem);
+    });
+    body.appendChild(box);
+  }else{
+    const box=document.createElement('div');
+    box.className='safe-box';
+    box.textContent='✅ TIDAK ADA KONDISI TIDAK AMAN';
+    body.appendChild(box);
+  }
+
+  if(findings.length){
+    const box=document.createElement('div');
+    box.className='finding-box';
+    box.textContent=`Temuan dicatat: ${findings.length}`;
+    body.appendChild(box);
+  }
+
+  modal.hidden=false;
 };
+
+window.closeDetailModal=()=>{
+  const modal=document.getElementById('detailModal');
+  if(modal) modal.hidden=true;
+};
+
+document.getElementById('detailModal').addEventListener('click',event=>{
+  if(event.target===event.currentTarget) closeDetailModal();
+});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape') closeDetailModal();
+});
 
 window.downloadRecord=i=>{
   const r=state.records[i], a=document.createElement('a');
